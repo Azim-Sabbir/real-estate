@@ -28,6 +28,19 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="py-0 nav-link @if ($menu == 'user_properties') fw-bolder fs-6 active @endif "
+                    aria-current="page" href="{{ route('property_request') }}">
+                    <div class="d-flex">
+                        <div style="width: 25px" class="fs-5 text-center">
+                            <i class="fas fa-cubes"></i>
+                        </div>
+                        <span class="ms-2 my-auto">
+                            property requests
+                        </span>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="py-0 nav-link @if ($menu == 'cities') fw-bolder fs-6 active @endif "
                     aria-current="page" href="{{ route('list_cities') }}">
                     <div class="d-flex">

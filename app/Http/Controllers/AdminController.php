@@ -401,7 +401,7 @@ class AdminController extends Controller
     {
         $title = "Properties List";
         $menu = "properties";
-        $pro = Property::with('Cate', 'City')->latest()->get();
+        $pro = Property::where('status', "!=", "pending")->with('Cate', 'City')->latest()->get();
 
         $data = compact('title', 'menu', 'pro');
         return view('AdminPanel.properties.list', $data);
@@ -839,4 +839,58 @@ class AdminController extends Controller
         return redirect()->back();
     }
     //Chng Password Ends
+
+    public function propertyRequest()
+    {
+        $title = "Property Requests by users";
+        $menu = "user_properties";
+        $pro = Property::with('Cate', 'City', 'owner:id,name')
+            ->where("requested_by", "!=", null)
+            ->latest()
+            ->get();
+
+        $data = compact('title', 'menu', 'pro');
+        return view('AdminPanel.properties.request_list', $data);
+    }
+
+    public function propertyEdit($id, Request $request)
+    {
+        $title = "Edit  Property Request";
+        $menu = "user_properties";
+
+        $pro = Property::with("owner")->findorfail($id);
+        $pro_faci = json_decode($pro->faci, true);
+
+
+        $city = City::select('id', 'city')->where('status', '=', '1')->get();
+        $cate = Category::select('id', 'name')->get();
+        $faci = Facilities::select('*')->get();
+
+        $data = compact('title', 'menu', 'pro', 'pro_faci', 'city', 'cate', 'faci');
+        return view('AdminPanel.properties.user_property_form', $data);
+    }
+
+    public function propertyUpdate($id, Request $request)
+    {
+        $property = Property::where('id', $id)->first();
+        $status = $property->status === "pending" ? "accepted" : "pending";
+        $property->status = $status;
+        $property->save();
+
+        $request->session()->flash('msg', 'Updated...');
+        $request->session()->flash('msgst', 'success');
+
+        return redirect(route('property_request'));
+    }
+
+    public function propertyDelete($id, Request $request)
+    {
+        $property = Property::where('id', $id)->first();
+        $property->delete();
+
+        $request->session()->flash('msg', 'Deleted...');
+        $request->session()->flash('msgst', 'warning');
+
+        return redirect(route('property_request'));
+    }
 }

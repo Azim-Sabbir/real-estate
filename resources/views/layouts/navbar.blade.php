@@ -58,6 +58,10 @@
                                 @endforeach
                             </ul>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link @if ($menu == 'request_for_property') active @endif" aria-current="page"
+                               href="{{ route('request_property') }}">Sell your property</a>
+                        </li>
                         {{-- <li class="nav-item">
                             <a class="nav-link" href="#">Link</a>
                         </li> --}}
