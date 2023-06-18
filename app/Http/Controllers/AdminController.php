@@ -425,13 +425,13 @@ class AdminController extends Controller
             'purpose' => 'required',
             'category' => 'required',
             'image' => 'required|mimes:png,jpg',
-            'fe_image' => 'required|mimes:png,jpg',
+            'fe_image' => 'mimes:png,jpg',
             'floorplan' => 'mimes:png,jpg',
             'rooms' => 'required|numeric',
             'bathrooms' => 'required|numeric',
             'city' => 'required',
             'address' => 'required|max:191',
-            'cont_ph' => 'required|min:9|max:11',
+            'cont_ph' => 'required|min:5|max:20',
             'cont_em' => 'required|email',
             'area' => 'required|numeric',
             // 'description' => 'string',
@@ -455,6 +455,7 @@ class AdminController extends Controller
         $pro->description = $request->description ? $request->description : null;
         $pro->video = $request->video ? $request->video : null;
         $pro->map = $request->map ? $request->map : null;
+        $pro->status = $request->status ? $request->status : "accepted";
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $iname = date('Ym') . '-' . rand() . '.' . $image->extension();
