@@ -19,4 +19,9 @@ class Property extends Model
     {
         return $this->belongsTo(City::class,'city');
     }
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class,'requested_by');
+    }
 }

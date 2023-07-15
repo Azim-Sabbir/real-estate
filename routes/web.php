@@ -61,6 +61,9 @@ Route::get('/terms', [UserController::class, 'show_terms'])->name('show_terms');
 Route::middleware([UserCheck::class])->group(function () {
     //paths only for logged in users
 
+    Route::get('/request-property', [UserController::class, 'requestPropertyPage'])->name('request_property');
+    Route::post('/request-property', [UserController::class, 'saveRequestedProperty'])->name('save-requested-property');
+
     //User profile
     Route::get('/user/profile', [UserController::class, 'userprofile'])->name('UserProfile');
     Route::get('/user/profile/edit', [UserController::class, 'edituserprofile'])->name('editUserProfile');
@@ -174,6 +177,12 @@ Route::middleware(AuthCheck::class)->group(function () {
     Route::get('/admin/chng-password', [AdminController::class, 'chng_password'])->name('chng_password');
     Route::post('/admin/chng-password', [AdminController::class, 'save_password'])->name('save_password');
     //Change Password Ends
+
+    /*user property request related routes*/
+    Route::get('/admin/property-request', [AdminController::class, 'propertyRequest'])->name('property_request');
+    Route::get('/admin/property-request/{id}/edit', [AdminController::class, 'propertyEdit'])->name('property_edit');
+    Route::post('/admin/property-request/{id}/edit', [AdminController::class, 'propertyUpdate'])->name('property_request_update');
+    Route::get('/admin/property-request/{id}/delete', [AdminController::class, 'propertyDelete'])->name('property_request_delete');
 });
 
 //if none of above route is used then sended to 404

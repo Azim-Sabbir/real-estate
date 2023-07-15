@@ -17,7 +17,6 @@ class UserCheck
     public function handle(Request $request, Closure $next)
     {
         if ($request->session()->has('user')) {
-            // dd($request);
             return $next($request);
         }else{
             return redirect(route('UserLoginForm'));

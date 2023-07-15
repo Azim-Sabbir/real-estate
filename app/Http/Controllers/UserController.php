@@ -210,6 +210,7 @@ class UserController extends Controller
         $menu = "home";
         $featuredPro = Property::with('Cate', 'City')
             ->where('public', true)
+            ->where('status', "!=", "pending")
             ->where('featured', true)
             ->latest()->limit(4)->get();
         $newlyAdded = Property::with('Cate', 'City')
@@ -540,5 +541,99 @@ class UserController extends Controller
 
         $data = compact('title', 'menu');
         return view('frontend.terms', $data);
+    }
+
+    public function requestPropertyPage()
+    {
+        $title = "Request a Property";
+        $menu = 'request_for_property';
+        $city = City::select('id', 'city')->where('status', '=', '1')->get();
+        $cate = Category::select('id', 'name')->get();
+        $faci = Facilities::select('*')->get();
+
+        $data = compact('title', 'menu', 'city', 'cate', 'faci');
+
+        return view('frontend.request_property', $data);
+    }
+
+    public function saveRequestedProperty(Request $request)
+    {
+        $userData = $request->session()->get('user');
+
+        if ($userData["type"] !== "U") {
+            $request->session()->flash('msg', 'Your can not request property.');
+            return redirect('/');
+        }
+
+        $valid = $request->validate([
+            'title' => 'required',
+            'price' => 'required|numeric|min:0|max:999999999',
+            'purpose' => 'required',
+            'category' => 'required',
+            'image' => 'required|mimes:png,jpg',
+            'fe_image' => 'required|mimes:png,jpg',
+            'floorplan' => 'mimes:png,jpg',
+            'rooms' => 'required|numeric',
+            'bathrooms' => 'required|numeric',
+            'city' => 'required',
+            'address' => 'required|max:191',
+            'cont_ph' => 'required',
+            'cont_em' => 'required|email',
+            'area' => 'required|numeric',
+            // 'description' => 'string',
+        ]);
+        $pro = new Property;
+        $pro->title = $request->title;
+        $pro->title_slug = str_slug($request->title);
+        $pro->price = $request->price;
+        $pro->purpose = $request->purpose;
+        $pro->category = $request->category;
+        $pro->city = $request->city;
+        $pro->rooms = $request->rooms;
+        $pro->bathrooms = $request->bathrooms;
+        $pro->address = $request->address;
+        $pro->cont_ph = $request->cont_ph;
+        $pro->cont_em = $request->cont_em;
+        $pro->faci = $request->faci ? json_encode($request->faci, true) : null;
+        $pro->featured = false;
+        $pro->public = false;
+        $pro->area = $request->area ? $request->area : null;
+        $pro->description = $request->description ? $request->description : null;
+        $pro->video = $request->video ? $request->video : null;
+        $pro->map = $request->map ? $request->map : null;
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $iname = date('Ym') . '-' . rand() . '.' . $image->extension();
+            $store = $image->storeAs('public/property', $iname);
+            if ($store) {
+                $pro->image = $iname;
+            }
+        }
+        if ($request->hasFile('fe_image')) {
+            $image = $request->file('fe_image');
+            $iname = date('Ym') . '-' . rand() . '.' . $image->extension();
+            $store = $image->storeAs('public/property', $iname);
+            if ($store) {
+                $pro->fe_image = $iname;
+            }
+        }
+        if ($request->hasFile('floorplan')) {
+            $image = $request->file('floorplan');
+            $iname = date('Ym') . '-' . rand() . '.' . $image->extension();
+            $store = $image->storeAs('public/property', $iname);
+            if ($store) {
+                $pro->floorplan = $iname;
+            }
+        }
+        $pro->requested_by = $userData["id"];
+
+        $pro->save();
+
+
+        $request->session()->flash('msg', 'Added...');
+        $request->session()->flash('msgst', 'success');
+
+        return redirect('/');
+
     }
 }

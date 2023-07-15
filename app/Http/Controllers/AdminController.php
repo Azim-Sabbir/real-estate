@@ -401,7 +401,7 @@ class AdminController extends Controller
     {
         $title = "Properties List";
         $menu = "properties";
-        $pro = Property::with('Cate', 'City')->latest()->get();
+        $pro = Property::where('status', "!=", "pending")->with('Cate', 'City')->latest()->get();
 
         $data = compact('title', 'menu', 'pro');
         return view('AdminPanel.properties.list', $data);
@@ -425,13 +425,13 @@ class AdminController extends Controller
             'purpose' => 'required',
             'category' => 'required',
             'image' => 'required|mimes:png,jpg',
-            'fe_image' => 'required|mimes:png,jpg',
+            'fe_image' => 'mimes:png,jpg',
             'floorplan' => 'mimes:png,jpg',
             'rooms' => 'required|numeric',
             'bathrooms' => 'required|numeric',
             'city' => 'required',
             'address' => 'required|max:191',
-            'cont_ph' => 'required|min:9|max:11',
+            'cont_ph' => 'required|min:5|max:20',
             'cont_em' => 'required|email',
             'area' => 'required|numeric',
             // 'description' => 'string',
@@ -455,6 +455,7 @@ class AdminController extends Controller
         $pro->description = $request->description ? $request->description : null;
         $pro->video = $request->video ? $request->video : null;
         $pro->map = $request->map ? $request->map : null;
+        $pro->status = $request->status ? $request->status : "accepted";
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $iname = date('Ym') . '-' . rand() . '.' . $image->extension();
@@ -839,4 +840,58 @@ class AdminController extends Controller
         return redirect()->back();
     }
     //Chng Password Ends
+
+    public function propertyRequest()
+    {
+        $title = "Property Requests by users";
+        $menu = "user_properties";
+        $pro = Property::with('Cate', 'City', 'owner:id,name')
+            ->where("requested_by", "!=", null)
+            ->latest()
+            ->get();
+
+        $data = compact('title', 'menu', 'pro');
+        return view('AdminPanel.properties.request_list', $data);
+    }
+
+    public function propertyEdit($id, Request $request)
+    {
+        $title = "Edit  Property Request";
+        $menu = "user_properties";
+
+        $pro = Property::with("owner")->findorfail($id);
+        $pro_faci = json_decode($pro->faci, true);
+
+
+        $city = City::select('id', 'city')->where('status', '=', '1')->get();
+        $cate = Category::select('id', 'name')->get();
+        $faci = Facilities::select('*')->get();
+
+        $data = compact('title', 'menu', 'pro', 'pro_faci', 'city', 'cate', 'faci');
+        return view('AdminPanel.properties.user_property_form', $data);
+    }
+
+    public function propertyUpdate($id, Request $request)
+    {
+        $property = Property::where('id', $id)->first();
+        $status = $property->status === "pending" ? "accepted" : "pending";
+        $property->status = $status;
+        $property->save();
+
+        $request->session()->flash('msg', 'Updated...');
+        $request->session()->flash('msgst', 'success');
+
+        return redirect(route('property_request'));
+    }
+
+    public function propertyDelete($id, Request $request)
+    {
+        $property = Property::where('id', $id)->first();
+        $property->delete();
+
+        $request->session()->flash('msg', 'Deleted...');
+        $request->session()->flash('msgst', 'warning');
+
+        return redirect(route('property_request'));
+    }
 }
