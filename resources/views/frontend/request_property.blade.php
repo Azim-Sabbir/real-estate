@@ -229,7 +229,7 @@
                             <p class="text-muted form-label">for best output upload [1903 x 513] Image
                             </p>
                             <div class="input-group">
-                                <input type="file" class="form-control" name="fe_image" @if(empty($pro->fe_image)) required @endif>
+                                <input type="file" class="form-control" name="fe_image" @if(empty($pro->fe_image)) @endif>
                             </div>
                             <div class="text-danger fst-italic lh-1">* @error('fe_image'){{ $message }} @enderror
                             </div>
@@ -246,7 +246,7 @@
                             <p class="text-muted form-label">for best output upload [1920 x 1440] [4:3] Image
                             </p>
                             <div class="input-group">
-                                <input type="file" class="form-control" name="image" @if (empty($pro->image))required @endif>
+                                <input type="file" class="form-control" name="image" @if (empty($pro->image)) @endif>
                             </div>
                             <div class="text-danger fst-italic lh-1">* @error('image'){{ $message }} @enderror
                             </div>
