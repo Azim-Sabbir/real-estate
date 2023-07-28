@@ -11,7 +11,6 @@ use App\Models\Reviews;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserData;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
@@ -25,12 +24,26 @@ class AdminController extends Controller
         $title = 'Dashboard';
         $menu = 'dashboard';
 
-        $newUsers = User::with('Data')->whereMonth('created_at', Carbon::now()->month)->latest()->get();
-        $newReviews = Reviews::with('Users')->whereMonth('created_at', Carbon::now()->month)->latest()->get();
-        $newProperty = Property::whereMonth('created_at', Carbon::now()->month)->latest()->get();
-        // dd($newUsers);
+        $newUsers = User::with('Data')
+            ->latest()
+            ->limit(5)
+            ->get();
 
-        $data = compact('title', 'menu', 'newUsers', 'newReviews', 'newProperty');
+        $newReviews = Reviews::with('Users')
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        $newProperty = Property::latest()
+            ->limit(5)
+            ->get();
+
+        $soldProperties = Property::latest()
+            ->where('sold_to', '!=', null)
+            ->limit(5)
+            ->get();
+
+        $data = compact('title', 'menu', 'newUsers', 'newReviews', 'newProperty', 'soldProperties');
         return view('AdminPanel.dashboard.dashboard')->with($data);
     }
     //sending to adminlogin page
@@ -401,10 +414,27 @@ class AdminController extends Controller
     {
         $title = "Properties List";
         $menu = "properties";
-        $pro = Property::where('status', "!=", "pending")->with('Cate', 'City')->latest()->get();
+        $pro = Property::where('status', "!=", "pending")
+            ->where('sold_to',"=", null)
+            ->with('Cate', 'City')
+            ->latest()
+            ->get();
 
         $data = compact('title', 'menu', 'pro');
         return view('AdminPanel.properties.list', $data);
+    }
+
+    public function getSoldPropertiesList()
+    {
+        $title = "Sold Properties List";
+        $menu = "sold-properties";
+        $pro = Property::where('status', "!=", "pending")
+            ->where('sold_to',"!=", null)
+            ->with('Cate', 'City')
+            ->get();
+
+        $data = compact('title', 'menu', 'pro');
+        return view('AdminPanel.properties.sold-list', $data);
     }
     public function add_properties(Request $request)
     {

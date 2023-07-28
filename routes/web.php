@@ -150,6 +150,7 @@ Route::middleware(AuthCheck::class)->group(function () {
     Route::get('/admin/properties', [AdminController::class, 'list_properties'])->name('list_properties');
     Route::get('/admin/properties/add', [AdminController::class, 'add_properties'])->name('add_properties');
     Route::post('/admin/properties/add', [AdminController::class, 'properties_added'])->name('properties_added');
+    Route::get('/admin/sold-properties', [AdminController::class, 'getSoldPropertiesList'])->name('list_sold_properties');
 
     Route::get('/admin/properties/{id}/del', [AdminController::class, 'del_properties'])->name('del_properties');
     Route::get('/admin/properties/{id}/edit', [AdminController::class, 'edit_properties'])->name('edit_properties');

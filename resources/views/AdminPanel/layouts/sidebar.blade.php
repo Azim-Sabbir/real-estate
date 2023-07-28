@@ -80,6 +80,19 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="py-0 nav-link @if ($menu == 'sold-properties') fw-bolder fs-6 active @endif "
+                    aria-current="page" href="{{ route('list_sold_properties') }}">
+                    <div class="d-flex">
+                        <div style="width: 25px" class="fs-5 text-center">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <span class="ms-2 my-auto">
+                            Sold Properties
+                        </span>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="py-0 nav-link @if ($menu == 'gallary') fw-bolder fs-6 active @endif "
                     aria-current="page" href="{{ route('list_gallary') }}">
                     <div class="d-flex text-center">

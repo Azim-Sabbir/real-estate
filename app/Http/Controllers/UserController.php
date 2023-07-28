@@ -212,15 +212,17 @@ class UserController extends Controller
             ->where('public', true)
             ->where('status', "!=", "pending")
             ->where('featured', true)
+            ->where('sold_to',"=", null)
             ->latest()->limit(4)->get();
         $newlyAdded = Property::with('Cate', 'City')
             ->where('public', true)
+            ->where('sold_to',"=", null)
             // ->where('featured', false)
             ->latest()->limit(6)->get();
         $showcate = Category::latest()->limit(6)->get();
-        $catedata = Category::with('Pro')->latest()
-            // ->limit(3)
-            ->get();
+        $catedata = Category::with(["Pro" => function($q){
+            return $q->where('sold_to',"=", null);
+        }])->latest()->get();
 
         $data = compact('title', 'menu', 'featuredPro', 'newlyAdded', 'showcate', 'catedata');
         return view('frontend.home', $data);
@@ -230,6 +232,7 @@ class UserController extends Controller
     {
         $show = Property::with('Cate', 'City')
             ->where('public', true)
+            ->where('sold_to',"=", null)
             ->latest()
             ->paginate(10);
         $title = 'Properties';
@@ -250,6 +253,7 @@ class UserController extends Controller
         $cate_fltr = $request->route()->parameter('cate');
         $cate = Category::where('slug_name', '=', $cate_fltr)->first();
         $show = Property::with('Cate', 'City')
+            ->where('sold_to',"=", null)
             ->where('public', true)
             ->where('category', '=', $cate->id)
             // ->where('featured', false)
@@ -271,13 +275,11 @@ class UserController extends Controller
         $city_fltr = $request->route()->parameter('city');
         $city = City::where('slug_city', '=', $city_fltr)->first();
         $show = Property::with('Cate', 'City')
+            ->where('sold_to',"=", null)
             ->where('public', true)
             ->where('city', '=', $city->id)
-            // ->where('featured', false)
             ->latest()
-            // ->limit(6)
             ->paginate(10);
-        // ->get();
         $title = $city->city;
         $menu = 'city';
 
@@ -290,6 +292,7 @@ class UserController extends Controller
         $show = Property::with('Cate', 'City')
             ->where('public', true)
             ->where('purpose', '=', $purpose_fltr)
+            ->where('sold_to',"=", null)
             // ->where('featured', false)
             ->latest()
             // ->limit(6)
@@ -309,6 +312,7 @@ class UserController extends Controller
         $pro = $request->route()->parameter('pro');
         $item = Property::with('Cate', 'City')
             ->where('title_slug', '=', $pro)
+            ->where("sold_to", "=", null)
             ->first();
         $faci = [];
         $facis = json_decode($item->faci);
@@ -395,6 +399,7 @@ class UserController extends Controller
                     $purposeS,
                     $searchStr,
                 ])
+                ->where('sold_to',"=", null)
                 ->orderBy($sortW, $sortS)
                 ->paginate(10);
 
@@ -422,6 +427,7 @@ class UserController extends Controller
                 $purposeS,
                 ['title', 'LIKE', $searchStr]
             ])
+            ->where('sold_to',"=", null)
             ->latest()
             ->paginate(10);
         $title = 'Propeties';
