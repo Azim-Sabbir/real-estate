@@ -53,7 +53,7 @@
                                         data-fancybox="gallery"
                                         data-src="{{ asset('/storage/gallary/' . $item->pro_id . '/' . $item->gal_image) }}"
                                         alt="Error"></th>
-                                <th scope="row">{{ $item->Property->title }}</th>
+                                <th scope="row">{{ $item->Property->title ?? "" }}</th>
                                 <th scope="row">
                                     <a class="btn btn-danger btn-sm" onclick="return confirm('Sure to delete?')"
                                         href="{{ route('del_gallary', [$item->pro_id, $item->id]) }}">

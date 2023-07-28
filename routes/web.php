@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BuyPropertyController;
 use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -56,6 +57,19 @@ Route::post('/property/propSearch', [UserController::class, 'propSearch'])->name
 Route::get('/about', [UserController::class, 'show_about'])->name('show_about');
 Route::get('/faq', [UserController::class, 'show_faq'])->name('show_faq');
 Route::get('/terms', [UserController::class, 'show_terms'])->name('show_terms');
+
+
+/*
+ * buy property related routes
+ *
+ * */
+Route::get('/cart/{property}', [BuyPropertyController::class, 'goToCartPage'])
+    ->name('cart-page')
+    ->middleware(UserCheck::class);
+
+Route::get('/buy-property/{property}', [BuyPropertyController::class, 'buyProperty'])
+    ->name('buy-property')
+    ->middleware(UserCheck::class);
 
 //checking user is loggged in
 Route::middleware([UserCheck::class])->group(function () {

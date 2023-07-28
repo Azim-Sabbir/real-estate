@@ -15,6 +15,18 @@
 
             <div class="row">
                 <div class="col-12 mb-5 text-center">
+                    <div class="container marketing">
+                        @if(session('success'))
+                            <div class="alert alert-success">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
+                        @if(session('warning'))
+                            <div class="alert alert-warning">
+                                {{ session('warning') }}
+                            </div>
+                        @endif
                     <h1>Categories</h1>
                 </div>
                 <div id="cat_cara" class="carousel">

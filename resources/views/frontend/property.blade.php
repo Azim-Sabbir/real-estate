@@ -79,6 +79,15 @@
                                                     </a>
                                                 @endif
                                             </div>
+                                            <div class="col-12 mb-3">
+                                                <a
+                                                    class="btn btn-md btn-outline-success"
+                                                    href="{{ route('cart-page', [$item->id]) }}"
+                                                >
+                                                    <i class="fa-solid fa-cart-shopping"></i>
+                                                    <span class="save_pro_text"> Buy Now </span>
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

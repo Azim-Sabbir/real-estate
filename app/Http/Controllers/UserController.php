@@ -468,7 +468,7 @@ class UserController extends Controller
         $user_data = UserData::find($userId);
         $saved = json_decode($user_data->saved, true);
         $ids = [];
-        foreach ($saved as $key => $save) {
+        foreach ($saved ?? [] as $key => $save) {
             array_push($ids, $key);
         }
         $show = Property::with('Cate', 'City')
@@ -543,8 +543,16 @@ class UserController extends Controller
         return view('frontend.terms', $data);
     }
 
-    public function requestPropertyPage()
+    public function requestPropertyPage(Request $request)
     {
+        $userData = $request->session()->get('user');
+
+        if ($userData["type"] === "R") {
+            $request->session()->flash('msg', 'Your can not request property, you are a root user.');
+            return redirect('/');
+        }
+
+
         $title = "Request a Property";
         $menu = 'request_for_property';
         $city = City::select('id', 'city')->where('status', '=', '1')->get();
