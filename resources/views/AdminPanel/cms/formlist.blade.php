@@ -99,8 +99,9 @@
                                         </div>
                                         <div class="col-md-12 mb-2">
                                             <label for="" class="form-label">Content</label>
-                                            <textarea name="home_content" id="home_content"
-                                                class="ckeditor">{{ $cms['home_content'] ?? '' }}</textarea>
+                                            <textarea name="home_content" id="editor" class="ckeditor">
+                                                {{ $cms['home_content'] ?? '' }}
+                                            </textarea>
                                         </div>
                                         @if (session()->get('AdminUser')['type'] == 'R')
                                             <div class="col-md-12">

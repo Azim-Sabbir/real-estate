@@ -41,7 +41,8 @@ return [
                 '/js/fancybox.js',
                 '/js/datatable.js',
                 '/js/datatabkebt5.min.js',
-                '/js/ckeditor.min.js',
+//                '/js/ckeditor.min.js',
+                'https://cdn.ckeditor.com/4.17.2/standard/ckeditor.js',
                 '/js/adminjs.js'
             ]
         ],
