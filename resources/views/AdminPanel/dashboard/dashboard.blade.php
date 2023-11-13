@@ -161,7 +161,7 @@
                                         </div>
                                         <div class="col-9 mb-2">
                                             <div class="fs-6">{{ $property->title }}</div>
-                                            {{ $property->description }}
+                                            {{ substr($property->description, 0, 50) . '...' }}
                                         </div>
                                     @empty
                                         <div class="col-12">
