@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\CategorySecond;
 use App\Models\City;
 use App\Models\Facilities;
 use App\Models\gallary;
 use App\Models\Property;
+use App\Models\PropertySecond;
 use App\Models\Reviews;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -127,6 +129,14 @@ class AdminController extends Controller
             $cate->image = $iname;
         }
         $cate->save();
+
+
+        (new CategorySecond())->create([
+            'id' => $cate->id,
+            'name' => $cate->name,
+            'slug_name' => $cate->slug_name,
+            'image' => $cate->image,
+        ]);
 
         $request->session()->flash('msg', 'Added...');
         $request->session()->flash('msgst', 'success');
@@ -414,11 +424,20 @@ class AdminController extends Controller
     {
         $title = "Properties List";
         $menu = "properties";
-        $pro = Property::where('status', "!=", "pending")
+        $pro1 = Property::where('status', "!=", "pending")
             ->where('sold_to',"=", null)
             ->with('Cate', 'City')
             ->latest()
             ->get();
+
+        $pro2 = PropertySecond::where('status', "!=", "pending")
+            ->where('sold_to',"=", null)
+            ->with('Cate', 'City')
+            ->latest()
+            ->get();
+
+        $pro = $pro1->concat($pro2);
+
 
         $data = compact('title', 'menu', 'pro');
         return view('AdminPanel.properties.list', $data);
@@ -433,8 +452,15 @@ class AdminController extends Controller
             ->with('Cate', 'City')
             ->get();
 
+        $pro2 = PropertySecond::where('status', "!=", "pending")
+            ->where('sold_to',"!=", null)
+            ->with('Cate', 'City')
+            ->get();
+
+        $concatedData = $pro->concat($pro2);
+
         $data = compact('title', 'menu', 'pro');
-        return view('AdminPanel.properties.sold-list', $data);
+        return view('AdminPanel.properties.sold-list', $concatedData);
     }
     public function add_properties(Request $request)
     {
@@ -466,7 +492,18 @@ class AdminController extends Controller
             'area' => 'required|numeric',
             // 'description' => 'string',
         ]);
-        $pro = new Property;
+
+        $category = Category::where('id', $request->get("category"))->first();
+
+        $firstChar = substr($category->name, 0, 1);
+
+        if (ord($firstChar) >= 65 && ord($firstChar) <= 83) {
+            $pro = new Property();
+        } else {
+            $pro = new PropertySecond();
+        }
+
+
         $pro->title = $request->title;
         $pro->title_slug = str_slug($request->title);
         $pro->price = $request->price;
@@ -520,34 +557,29 @@ class AdminController extends Controller
     }
     public function del_properties(Request $request)
     {
-        $valid = validator($request->route()->parameters(), [
-            'id' => 'exists:properties,id'
-        ])->validate();
         $id = $request->route()->parameter('id');
 
-        if ($valid) {
-            $pro = Property::findorfail($id);
-            if ($pro->fe_image) {
-                Storage::delete('public/property/' . $pro->fe_image);
-            }
-            if ($pro->image) {
-                Storage::delete('public/property/' . $pro->image);
-            }
-            if ($pro->floorplan) {
-                Storage::delete('public/property/' . $pro->floorplan);
-            }
-            $gal = gallary::where('pro_id', $id)->get();
-            if ($gal) {
-                foreach ($gal as $img) {
-                    Storage::delete('public/gallary/' . $id . '/' . $img->gal_image);
-                }
-                $gal = gallary::where('pro_id', $id);
-                $gal->delete();
-            }
-            $reviews = Reviews::where('pro_id', $id);
-            $reviews->delete();
-            $pro->delete();
+        $slug = $request->route()->parameter('id');
+
+        $pro1 = Property::where('title_slug', $slug)->first();
+        $pro2 = PropertySecond::where('title_slug', $slug)->first();
+
+        if ($pro1) {
+            $pro = $pro1;
+        } else {
+            $pro = $pro2;
         }
+
+        if ($pro->fe_image) {
+            Storage::delete('public/property/' . $pro->fe_image);
+        }
+        if ($pro->image) {
+            Storage::delete('public/property/' . $pro->image);
+        }
+        if ($pro->floorplan) {
+            Storage::delete('public/property/' . $pro->floorplan);
+        }
+        $pro->delete();
 
         $request->session()->flash('msg', 'Deleted...');
         $request->session()->flash('msgst', 'danger');
@@ -556,15 +588,18 @@ class AdminController extends Controller
     }
     public function edit_properties(Request $request)
     {
-        $valid = validator($request->route()->parameters(), [
-            'id' => 'exists:properties,id'
-        ])->validate();
-        $id = $request->route()->parameter('id');
+        $slug = $request->route()->parameter('id');
 
-        if ($valid) {
-            $pro = Property::findorfail($id);
-            $pro_faci = json_decode($pro->faci, true);
+        $pro1 = Property::where('title_slug', $slug)->first();
+        $pro2 = PropertySecond::where('title_slug', $slug)->first();
+
+        if ($pro1) {
+            $pro = $pro1;
+        } else {
+            $pro = $pro2;
         }
+
+        $pro_faci = json_decode($pro->faci, true);
 
         $title = "Edit Property";
         $menu = "properties";
@@ -578,9 +613,6 @@ class AdminController extends Controller
     }
     public function properties_edited(Request $request)
     {
-        $valid = validator($request->route()->parameters(), [
-            'id' => 'exists:properties,id'
-        ])->validate();
         $id = $request->route()->parameter('id');
         $request->validate([
             'title' => 'required',
@@ -599,7 +631,18 @@ class AdminController extends Controller
             'area' => 'required|numeric',
             // 'description' => 'string',
         ]);
-        $pro = Property::findorfail($id);
+
+        $slug = $request->route()->parameter('id');
+
+        $pro1 = Property::where('title_slug', $slug)->first();
+        $pro2 = PropertySecond::where('title_slug', $slug)->first();
+
+        if ($pro1) {
+            $pro = $pro1;
+        } else {
+            $pro = $pro2;
+        }
+
         $pro->title = $request->title;
         $pro->title_slug = str_slug($request->title);
         $pro->price = $request->price;

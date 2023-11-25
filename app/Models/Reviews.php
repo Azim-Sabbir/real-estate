@@ -13,10 +13,10 @@ class Reviews extends Model
 
     public function Users()
     {
-        return $this->hasMany(User::class, 'id', 'u_id')->with('Data');
+        return $this->hasMany(User::class, 'id', 'u_id')->with('Data')->withDefault();
     }
     public function Property()
     {
-        return $this->hasOne(Property::class, 'id', 'pro_id')->select('id', 'title', 'title_slug');
+        return $this->hasOne(Property::class, 'id', 'pro_id')->select('id', 'title', 'title_slug')->withDefault();
     }
 }

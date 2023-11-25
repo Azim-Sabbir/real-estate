@@ -1,7 +1,4 @@
 <div class="row">
-    {{ $show->links() }}
-</div>
-<div class="row">
     @forelse ($show as $item)
         <div class="col-12 mb-2">
             <div class="card mb-3 p-0">

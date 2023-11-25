@@ -2,25 +2,25 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Property extends Model
+class PropertySecond extends Model
 {
-    use HasFactory;
+    protected $connection = "mysql_2";
     protected $table = 'properties';
     protected $primaryKey = 'id';
 
-    public function Cate()
+    public function Cate(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'category')->withDefault();
     }
-    public function City()
+    public function City(): BelongsTo
     {
         return $this->belongsTo(City::class,'city')->withDefault();
     }
 
-    public function owner()
+    public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class,'requested_by')->withDefault();
     }

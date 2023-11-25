@@ -15,7 +15,7 @@
                 </div>
             </div>
             <div class="mt-4">
-                <form class="card" style="width:90%;" id="proForm" action="@if (!empty($pro)){{ route('properties_edited', $pro->id) }}@else{{ route('properties_added') }}@endif" method="POST"
+                <form class="card" style="width:90%;" id="proForm" action="@if (!empty($pro)){{ route('properties_edited', $pro->title_slug) }}@else{{ route('properties_added') }}@endif" method="POST"
                     enctype="multipart/form-data">
                     <div class="card-header">
                         <div class="d-flex">

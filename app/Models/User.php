@@ -46,7 +46,7 @@ class User extends Authenticatable
 
     public function Data()
     {
-        return $this->hasOne(UserData::class, 'id');
+        return $this->hasOne(UserData::class, 'id')->withDefault();
     }
     public function Reviews()
     {

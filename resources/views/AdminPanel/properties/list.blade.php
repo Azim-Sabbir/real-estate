@@ -56,11 +56,11 @@
                                 <th scope="row"><a href="{{ route('get_reviews', $item->id) }}"
                                         class="btn btn-secondary btn-sm"><i class="fas fa-comment-alt"></i></a></th>
                                 <th scope="row">
-                                    <a class="btn btn-success btn-sm" href="{{ route('edit_properties', $item->id) }}">
+                                    <a class="btn btn-success btn-sm" href="{{ route('edit_properties', $item->title_slug) }}">
                                         <i class="fa fa-edit" aria-hidden="true"></i></a>
                                     @if (session()->get('AdminUser')['type'] == 'R')
                                         <a class="btn btn-danger btn-sm" onclick="return confirm('Sure to delete?')"
-                                            href="{{ route('del_properties', $item->id) }}">
+                                            href="{{ route('del_properties', $item->title_slug) }}">
                                             <i class="fa fa-trash" aria-hidden="true"></i></a>
                                     @endif
                                 </th>

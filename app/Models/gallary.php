@@ -13,10 +13,10 @@ class gallary extends Model
 
     public function Pro()
     {
-        return $this->hasOne(Property::class, 'id', 'pro_id');
+        return $this->hasOne(Property::class, 'id', 'pro_id')->withDefault();
     }
     public function Property()
     {
-        return $this->hasOne(Property::class, 'id', 'pro_id')->select('id', 'title', 'title_slug');
+        return $this->hasOne(Property::class, 'id', 'pro_id')->select('id', 'title', 'title_slug')->withDefault();
     }
 }

@@ -8,6 +8,7 @@ use App\Models\cms;
 use App\Models\Facilities;
 use App\Models\gallary;
 use App\Models\Property;
+use App\Models\PropertySecond;
 use App\Models\Reviews;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -208,17 +209,35 @@ class UserController extends Controller
     {
         $title = "Home";
         $menu = "home";
-        $featuredPro = Property::with('Cate', 'City')
+        $featuredPro1 = Property::with('Cate', 'City')
             ->where('public', true)
             ->where('status', "!=", "pending")
             ->where('featured', true)
             ->where('sold_to',"=", null)
             ->latest()->limit(4)->get();
-        $newlyAdded = Property::with('Cate', 'City')
+        $featuredPro2 = PropertySecond::with('Cate', 'City')
+            ->where('public', true)
+            ->where('status', "!=", "pending")
+            ->where('featured', true)
+            ->where('sold_to',"=", null)
+            ->latest()->limit(4)->get();
+
+        $featuredPro = $featuredPro1->merge($featuredPro2);
+
+
+        $newlyAdded1 = Property::with('Cate', 'City')
             ->where('public', true)
             ->where('sold_to',"=", null)
-            // ->where('featured', false)
             ->latest()->limit(6)->get();
+
+
+        $newlyAdded2 = PropertySecond::with('Cate', 'City')
+            ->where('public', true)
+            ->where('sold_to',"=", null)
+            ->latest()->limit(6)->get();
+
+        $newlyAdded = $newlyAdded1->merge($newlyAdded2);
+
         $showcate = Category::latest()->limit(6)->get();
         $catedata = Category::with(["Pro" => function($q){
             return $q->where('sold_to',"=", null);
@@ -252,15 +271,22 @@ class UserController extends Controller
         ])->validate();
         $cate_fltr = $request->route()->parameter('cate');
         $cate = Category::where('slug_name', '=', $cate_fltr)->first();
-        $show = Property::with('Cate', 'City')
+        $show1 = Property::with('Cate', 'City')
             ->where('sold_to',"=", null)
             ->where('public', true)
             ->where('category', '=', $cate->id)
-            // ->where('featured', false)
             ->latest()
-            // ->limit(6)
             ->paginate(10);
-        // ->get();
+
+        $show2 = PropertySecond::with('Cate', 'City')
+            ->where('sold_to',"=", null)
+            ->where('public', true)
+            ->where('category', '=', $cate->id)
+            ->latest()
+            ->paginate(10);
+
+        $show = $show1->merge($show2);
+
         $title = $cate->name;
         $menu = 'category';
 
